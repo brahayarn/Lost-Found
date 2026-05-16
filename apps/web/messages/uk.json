@@ -1,0 +1,61 @@
+{
+  "common": {
+    "login": "Увійти",
+    "logout": "Вийти",
+    "save": "Зберегти",
+    "cancel": "Скасувати",
+    "back": "Назад",
+    "next": "Далі",
+    "delete": "Видалити",
+    "edit": "Редагувати",
+    "create": "Створити",
+    "search": "Пошук",
+    "loading": "Завантаження…",
+    "empty": "Порожньо",
+    "yes": "Так",
+    "no": "Ні"
+  },
+  "header": {
+    "brand": "Lost & Found",
+    "subscribe": "Підписатись",
+    "login": "Увійти",
+    "search": "Опис або код LF-…"
+  },
+  "nav": {
+    "dashboard": "Дашборд",
+    "items": "Знахідки",
+    "claims": "Заявки",
+    "matches": "Збіги",
+    "analytics": "Аналітика",
+    "archive": "Архів повернень",
+    "disposals": "Утилізація",
+    "users": "Користувачі",
+    "retention": "Терміни зберігання",
+    "templates": "Шаблони листів",
+    "subscriptions": "Підписки",
+    "audit": "Журнал аудиту"
+  },
+  "admin": {
+    "workspace": "Робочий простір",
+    "navigation": "Навігація"
+  },
+  "login": {
+    "title": "Вхід для персоналу",
+    "subtitle": "Введіть пошту та пароль вашого облікового запису",
+    "email": "Email",
+    "password": "Пароль",
+    "submit": "Увійти",
+    "submitting": "Входимо…",
+    "welcome": "Вітаємо, {name}",
+    "failed": "Не вдалось увійти"
+  },
+  "dashboard": {
+    "title": "Дашборд",
+    "subtitle": "Швидкий огляд платформи Lost & Found"
+  },
+  "language": {
+    "label": "Мова",
+    "uk": "Українська",
+    "en": "English"
+  }
+}

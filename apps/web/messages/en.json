@@ -1,0 +1,61 @@
+{
+  "common": {
+    "login": "Sign in",
+    "logout": "Sign out",
+    "save": "Save",
+    "cancel": "Cancel",
+    "back": "Back",
+    "next": "Next",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "search": "Search",
+    "loading": "Loading…",
+    "empty": "Empty",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "header": {
+    "brand": "Lost & Found",
+    "subscribe": "Subscribe",
+    "login": "Sign in",
+    "search": "Description or LF- code…"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "items": "Items",
+    "claims": "Claims",
+    "matches": "Matches",
+    "analytics": "Analytics",
+    "archive": "Handover archive",
+    "disposals": "Disposals",
+    "users": "Users",
+    "retention": "Retention periods",
+    "templates": "Email templates",
+    "subscriptions": "Subscriptions",
+    "audit": "Audit log"
+  },
+  "admin": {
+    "workspace": "Workspace",
+    "navigation": "Navigation"
+  },
+  "login": {
+    "title": "Staff sign in",
+    "subtitle": "Enter your email and password",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Sign in",
+    "submitting": "Signing in…",
+    "welcome": "Welcome, {name}",
+    "failed": "Sign in failed"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Quick overview of the Lost & Found platform"
+  },
+  "language": {
+    "label": "Language",
+    "uk": "Українська",
+    "en": "English"
+  }
+}

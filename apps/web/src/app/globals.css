@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  @apply bg-stone-50 text-stone-900 antialiased;
+  font-feature-settings: "ss01", "cv11";
+}
+
+/* приглушений focus ring у мінімалістичному стилі */
+*:focus-visible {
+  @apply outline-none ring-2 ring-stone-900/20 ring-offset-2 ring-offset-stone-50;
+}
