@@ -22,7 +22,7 @@ import {
   ImageUpload,
   UploadingOverlay,
 } from "@/components/admin/image-upload";
-import { CATEGORY_OPTIONS } from "@/lib/categories";
+import { useCategoryOptions } from "@/lib/categories";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -50,17 +50,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-const toIsoLocal = (d: Date) => {
-  const tz = d.getTimezoneOffset() * 60000;
-  return new Date(d.getTime() - tz).toISOString().slice(0, 16);
-};
+import { DatePicker } from "@/components/ui/date-picker";
 
 export default function NewItemPage() {
   const router = useRouter();
   const qc = useQueryClient();
   const [photos, setPhotos] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
+  const categoryOptions = useCategoryOptions();
 
   const form = useForm<CreateItemDto>({
     resolver: zodResolver(CreateItemSchema),
@@ -208,7 +205,7 @@ export default function NewItemPage() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {CATEGORY_OPTIONS.map((opt) => (
+                        {categoryOptions.map((opt) => (
                           <SelectItem key={opt.value} value={opt.value}>
                             {opt.label}
                           </SelectItem>
@@ -247,28 +244,92 @@ export default function NewItemPage() {
               <FormField
                 control={form.control}
                 name="foundAt"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Дата і час</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="datetime-local"
-                        value={
-                          field.value
-                            ? toIsoLocal(new Date(field.value))
-                            : ""
-                        }
-                        onChange={(e) => {
-                          const v = e.target.value;
-                          field.onChange(
-                            v ? new Date(v).toISOString() : "",
-                          );
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                render={({ field }) => {
+                  const current = field.value ? new Date(field.value) : undefined;
+                  const hh = String((current ?? new Date()).getHours()).padStart(2, "0");
+                  const mm = String(
+                    Math.floor((current ?? new Date()).getMinutes() / 5) * 5,
+                  ).padStart(2, "0");
+                  const updateDate = (date: Date | undefined) => {
+                    if (!date) {
+                      field.onChange("");
+                      return;
+                    }
+                    const next = new Date(date);
+                    const base = current ?? new Date();
+                    next.setHours(base.getHours(), base.getMinutes(), 0, 0);
+                    field.onChange(next.toISOString());
+                  };
+                  const updateTime = (hour: string, minute: string) => {
+                    const next = new Date(current ?? new Date());
+                    next.setHours(Number(hour), Number(minute), 0, 0);
+                    field.onChange(next.toISOString());
+                  };
+                  return (
+                    <FormItem>
+                      <FormLabel>Дата і час знахідки</FormLabel>
+                      <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_120px_120px]">
+                        <div className="space-y-1">
+                          <span className="text-xs font-medium text-stone-500">
+                            Дата
+                          </span>
+                          <FormControl>
+                            <DatePicker
+                              value={current}
+                              onChange={updateDate}
+                              disabled={(d) => d > new Date()}
+                            />
+                          </FormControl>
+                        </div>
+                        <div className="space-y-1">
+                          <span className="text-xs font-medium text-stone-500">
+                            Година
+                          </span>
+                          <Select
+                            value={hh}
+                            onValueChange={(v) => updateTime(v, mm)}
+                          >
+                            <SelectTrigger aria-label="Година">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="max-h-60">
+                              {Array.from({ length: 24 }, (_, i) =>
+                                String(i).padStart(2, "0"),
+                              ).map((h) => (
+                                <SelectItem key={h} value={h}>
+                                  {h}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-1">
+                          <span className="text-xs font-medium text-stone-500">
+                            Хвилини
+                          </span>
+                          <Select
+                            value={mm}
+                            onValueChange={(v) => updateTime(hh, v)}
+                          >
+                            <SelectTrigger aria-label="Хвилини">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent className="max-h-60">
+                              {Array.from({ length: 12 }, (_, i) =>
+                                String(i * 5).padStart(2, "0"),
+                              ).map((m) => (
+                                <SelectItem key={m} value={m}>
+                                  {m}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
               />
             </CardContent>
           </Card>

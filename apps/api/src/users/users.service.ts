@@ -46,11 +46,11 @@ export class UsersService implements OnModuleInit {
     return this.userModel.findById(id);
   }
 
-  list() {
-    return this.userModel
+  async list() {
+    const users = await this.userModel
       .find({}, { passwordHash: 0 })
-      .sort({ createdAt: -1 })
-      .lean();
+      .sort({ createdAt: -1 });
+    return users.map((u) => this.publicView(u));
   }
 
   async create(data: {

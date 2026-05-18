@@ -17,19 +17,23 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCategoryAnalytics } from "@/hooks/api/use-dashboard-stats";
+import { useCategoryLabel } from "@/lib/categories";
 
+// Стримана палітра — приглушені, землисті тони у стилі застосунку
 const COLORS = [
-  "#1c1917",
-  "#44403c",
-  "#78716c",
-  "#a8a29e",
-  "#d6d3d1",
-  "#57534e",
-  "#292524",
+  "#1c1917", // stone-900 — графіт
+  "#3f6212", // lime-800 — олива
+  "#92400e", // amber-800 — теракота
+  "#1e3a8a", // blue-900 — індиго
+  "#7c2d12", // orange-900 — паленa глина
+  "#0f766e", // teal-700 — приглушений бірюзовий
+  "#78716c", // stone-500 — світло-сірий
 ];
 
 export function CategoryPieChart() {
   const { data, isLoading } = useCategoryAnalytics();
+  const categoryLabel = useCategoryLabel();
+  const localized = data?.map((d) => ({ ...d, name: categoryLabel(d.name) }));
 
   return (
     <Card>
@@ -38,9 +42,9 @@ export function CategoryPieChart() {
         <CardDescription>Усі зареєстровані знахідки</CardDescription>
       </CardHeader>
       <CardContent className="pt-0">
-        {isLoading || !data ? (
+        {isLoading || !localized ? (
           <Skeleton className="h-72 w-full" />
-        ) : data.length === 0 ? (
+        ) : localized.length === 0 ? (
           <p className="py-12 text-center text-sm text-stone-500">
             Немає даних
           </p>
@@ -49,7 +53,7 @@ export function CategoryPieChart() {
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
-                  data={data}
+                  data={localized}
                   dataKey="value"
                   nameKey="name"
                   innerRadius={50}
@@ -57,7 +61,7 @@ export function CategoryPieChart() {
                   paddingAngle={2}
                   stroke="#fff"
                 >
-                  {data.map((_, i) => (
+                  {localized.map((_, i) => (
                     <Cell key={i} fill={COLORS[i % COLORS.length]} />
                   ))}
                 </Pie>

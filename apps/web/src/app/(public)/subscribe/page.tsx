@@ -3,10 +3,11 @@
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 import { Bell } from "lucide-react";
 import { ItemCategory } from "@lf/shared";
 import { createSubscription } from "@/lib/api";
-import { CATEGORY_OPTIONS } from "@/lib/categories";
+import { useCategoryOptions } from "@/lib/categories";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -19,6 +20,8 @@ import {
 } from "@/components/ui/select";
 
 export default function SubscribePage() {
+  const t = useTranslations("subscribe");
+  const categoryOptions = useCategoryOptions();
   const [email, setEmail] = useState("");
   const [category, setCategory] = useState<ItemCategory>(ItemCategory.OTHER);
   const [keywords, setKeywords] = useState("");
@@ -34,15 +37,14 @@ export default function SubscribePage() {
           .filter(Boolean),
       }),
     onSuccess: () => {
-      toast.success("Підписку оформлено", {
-        description:
-          "Як тільки з'явиться річ за вашими параметрами — надішлемо лист.",
+      toast.success(t("toastSuccess"), {
+        description: t("toastSuccessDesc"),
       });
       setEmail("");
       setKeywords("");
     },
     onError: (e) =>
-      toast.error("Не вдалось підписатись", {
+      toast.error(t("toastFailed"), {
         description: e instanceof Error ? e.message : undefined,
       }),
   });
@@ -54,18 +56,15 @@ export default function SubscribePage() {
           <div className="mb-2 inline-flex h-10 w-10 items-center justify-center rounded-full bg-stone-100">
             <Bell className="h-5 w-5 text-stone-700" />
           </div>
-          <CardTitle>Сповіщення про нові знахідки</CardTitle>
-          <CardDescription>
-            Підпишіться — і отримаєте лист, як тільки з’явиться річ, що
-            підходить під опис.
-          </CardDescription>
+          <CardTitle>{t("title")}</CardTitle>
+          <CardDescription>{t("subtitle")}</CardDescription>
         </CardHeader>
         <CardContent>
           <form
             onSubmit={(e) => {
               e.preventDefault();
               if (!email) {
-                toast.error("Введіть email");
+                toast.error(t("emailRequired"));
                 return;
               }
               mutation.mutate();
@@ -74,7 +73,7 @@ export default function SubscribePage() {
           >
             <div>
               <label className="mb-1 block text-sm font-medium text-stone-700">
-                Email
+                {t("email")}
               </label>
               <Input
                 type="email"
@@ -86,7 +85,7 @@ export default function SubscribePage() {
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium text-stone-700">
-                Категорія
+                {t("category")}
               </label>
               <Select
                 value={category}
@@ -96,7 +95,7 @@ export default function SubscribePage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {CATEGORY_OPTIONS.map((opt) => (
+                  {categoryOptions.map((opt) => (
                     <SelectItem key={opt.value} value={opt.value}>
                       {opt.label}
                     </SelectItem>
@@ -106,27 +105,24 @@ export default function SubscribePage() {
             </div>
             <div>
               <label className="mb-1 block text-sm font-medium text-stone-700">
-                Ключові слова (опційно)
+                {t("keywords")}
               </label>
               <Input
                 value={keywords}
                 onChange={(e) => setKeywords(e.target.value)}
-                placeholder="рюкзак, чорний, nike"
+                placeholder={t("keywordsPlaceholder")}
               />
-              <p className="mt-1 text-xs text-stone-500">
-                Через кому. Якщо порожньо — отримаєте лист про будь-яку нову
-                знахідку цієї категорії.
-              </p>
+              <p className="mt-1 text-xs text-stone-500">{t("keywordsHint")}</p>
             </div>
             <Button
               type="submit"
               className="w-full"
               disabled={mutation.isPending}
             >
-              {mutation.isPending ? "Підписуємо…" : "Підписатися"}
+              {mutation.isPending ? t("submitting") : t("submit")}
             </Button>
             <p className="text-center text-xs text-stone-500">
-              Скасувати підписку можна написавши нам на пошту.
+              {t("unsubscribeHint")}
             </p>
           </form>
         </CardContent>

@@ -33,7 +33,7 @@ export default function AdminDashboardPage() {
         <StatCard
           label="Очікують перевірки"
           value={data?.pendingMatches}
-          hint="Збіги зі статусом PENDING"
+          hint="Збіги що очікують на підтвердження"
           icon={GitMerge}
           loading={isLoading}
         />

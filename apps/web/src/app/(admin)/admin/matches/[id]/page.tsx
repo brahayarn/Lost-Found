@@ -15,10 +15,22 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useCategoryLabel } from "@/lib/categories";
+import {
+  useItemStatusLabel,
+  useClaimStatusLabel,
+  useMatchStatusLabel,
+  useScoreLabel,
+} from "@/lib/labels";
 
 export default function MatchDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const qc = useQueryClient();
+  const categoryLabel = useCategoryLabel();
+  const itemStatusLabel = useItemStatusLabel();
+  const claimStatusLabel = useClaimStatusLabel();
+  const matchStatusLabel = useMatchStatusLabel();
+  const scoreLabel = useScoreLabel();
   const { data: match, isLoading, isError } = useQuery({
     queryKey: ["match", id],
     queryFn: () => fetchMatch(id),
@@ -81,7 +93,7 @@ export default function MatchDetailsPage() {
               Зіставлення знахідки та заявки
             </h1>
             <p className="mt-1 text-sm text-stone-500">
-              Score{" "}
+              {scoreLabel}{" "}
               <span className="font-mono text-stone-800">
                 {match.score.toFixed(2)}
               </span>
@@ -96,7 +108,7 @@ export default function MatchDetailsPage() {
                   : "amber"
             }
           >
-            {match.status}
+            {matchStatusLabel(match.status)}
           </Badge>
         </div>
       </div>
@@ -123,10 +135,11 @@ export default function MatchDetailsPage() {
                 </p>
                 <p>
                   <span className="text-stone-500">Категорія:</span>{" "}
-                  {item.category}
+                  {categoryLabel(item.category)}
                 </p>
                 <p>
-                  <span className="text-stone-500">Статус:</span> {item.status}
+                  <span className="text-stone-500">Статус:</span>{" "}
+                  {itemStatusLabel(item.status)}
                 </p>
                 {item.photoUrls && item.photoUrls.length > 0 && (
                   <div className="grid grid-cols-3 gap-2 pt-2">
@@ -169,7 +182,8 @@ export default function MatchDetailsPage() {
                   {claim.claimerEmail}
                 </p>
                 <p>
-                  <span className="text-stone-500">Статус:</span> {claim.status}
+                  <span className="text-stone-500">Статус:</span>{" "}
+                  {claimStatusLabel(claim.status)}
                 </p>
                 <div>
                   <p className="text-stone-500">Опис від заявника:</p>

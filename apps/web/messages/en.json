@@ -13,7 +13,8 @@
     "loading": "Loading…",
     "empty": "Empty",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "home": "Back to home"
   },
   "header": {
     "brand": "Lost & Found",
@@ -47,7 +48,8 @@
     "submit": "Sign in",
     "submitting": "Signing in…",
     "welcome": "Welcome, {name}",
-    "failed": "Sign in failed"
+    "failed": "Sign in failed",
+    "backHome": "Back to home"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -57,5 +59,106 @@
     "label": "Language",
     "uk": "Українська",
     "en": "English"
+  },
+  "home": {
+    "heroTitle": "Found. Kept. Returned.",
+    "heroSubtitle": "Lost & Found platform. Enter a description or an LF code to check if your item is with us.",
+    "lostMyItem": "I lost my item →",
+    "searchPlaceholder": "Item description or code LF-2026-…",
+    "search": "Search",
+    "latest": "Latest items",
+    "searchResults": "Search results",
+    "photoHidden": "Photos are blurred — only the verified owner sees the clear image."
+  },
+  "itemGrid": {
+    "loadError": "Failed to load items.",
+    "empty": "Nothing found yet."
+  },
+  "itemPage": {
+    "notFound": "Item not found.",
+    "allItems": "All items",
+    "otherItems": "Other items",
+    "claim": "This is mine →",
+    "untitled": "Item",
+    "found": "Found:",
+    "place": "Location:",
+    "blurNotice": "The photo is intentionally blurred. Only the verified owner sees the clear image to prevent fraud. If this is your item — submit a claim and we'll verify the description and identifying marks."
+  },
+  "claim": {
+    "title": "Submit a lost item claim",
+    "subtitle": "Describe the item in as much detail as possible — it increases the chance of finding it.",
+    "contact": "Contact",
+    "contactDescription": "We'll send a notification to this email if we find a match.",
+    "email": "Email",
+    "whatLost": "What did you lose",
+    "category": "Category",
+    "description": "Description",
+    "descriptionPlaceholder": "Black backpack with notes, an umbrella and a charger…",
+    "whereWhen": "Where and when",
+    "place": "Place",
+    "placePlaceholder": "12 Bandery St., near building #3",
+    "dateAndTime": "Date and time",
+    "date": "Date",
+    "hour": "Hour",
+    "minutes": "Minutes",
+    "pickDate": "Pick a date",
+    "submit": "Submit claim",
+    "submitting": "Submitting…",
+    "successTitle": "Claim accepted",
+    "successDescription": "Your claim {code} has been registered. We will notify you by email if we find a match with our items.",
+    "submitAnother": "Submit another",
+    "toastAccepted": "Claim accepted",
+    "toastFailed": "Could not submit"
+  },
+  "subscribe": {
+    "title": "Notifications about new items",
+    "subtitle": "Subscribe — and get an email as soon as something matches your description.",
+    "email": "Email",
+    "category": "Category",
+    "keywords": "Keywords (optional)",
+    "keywordsPlaceholder": "backpack, black, nike",
+    "keywordsHint": "Comma-separated. If empty — you'll be notified about any new item in this category.",
+    "submit": "Subscribe",
+    "submitting": "Subscribing…",
+    "unsubscribeHint": "To unsubscribe, write to us by email.",
+    "toastSuccess": "Subscription created",
+    "toastSuccessDesc": "As soon as an item matches your parameters — we'll send you an email.",
+    "toastFailed": "Could not subscribe",
+    "emailRequired": "Enter email"
+  },
+  "categories": {
+    "ELECTRONICS": "Electronics",
+    "DOCUMENTS": "Documents",
+    "KEYS": "Keys",
+    "BAG": "Bag / Backpack",
+    "CLOTHING": "Clothing",
+    "JEWELRY": "Jewelry",
+    "OTHER": "Other"
+  },
+  "itemStatus": {
+    "NEW": "New",
+    "VERIFICATION": "Verification",
+    "PUBLISHED": "Published",
+    "MATCHED": "Matched",
+    "CLAIMED": "Claimed",
+    "RETURNED": "Returned",
+    "TO_DISPOSE": "To dispose",
+    "ARCHIVED": "Archived"
+  },
+  "claimStatus": {
+    "NEW": "New",
+    "PROCESSING": "Processing",
+    "MATCHED": "Match found",
+    "READY_FOR_HANDOVER": "Ready for handover",
+    "CLOSED": "Closed",
+    "REJECTED": "Rejected"
+  },
+  "matchStatus": {
+    "PENDING": "Pending",
+    "CONFIRMED": "Confirmed",
+    "REJECTED": "Rejected"
+  },
+  "labels": {
+    "score": "Score"
   }
 }

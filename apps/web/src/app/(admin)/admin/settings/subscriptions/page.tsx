@@ -19,18 +19,21 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-
-const fmt = (iso: string) =>
-  new Date(iso).toLocaleString("uk-UA", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+import { useLocale } from "next-intl";
+import { useCategoryLabel } from "@/lib/categories";
 
 export default function SubscriptionsPage() {
   const qc = useQueryClient();
+  const locale = useLocale();
+  const categoryLabel = useCategoryLabel();
+  const fmt = (iso: string) =>
+    new Date(iso).toLocaleString(locale === "uk" ? "uk-UA" : "en-US", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   const [search, setSearch] = useState("");
 
   const { data, isLoading } = useQuery({
@@ -97,7 +100,7 @@ export default function SubscriptionsPage() {
                     <tr key={r._id}>
                       <td className="px-4 py-2 text-xs">{r.email}</td>
                       <td className="px-4 py-2">
-                        <Badge tone="slate">{r.category}</Badge>
+                        <Badge tone="slate">{categoryLabel(r.category)}</Badge>
                       </td>
                       <td className="px-4 py-2 text-xs text-stone-600">
                         {r.keywords.length ? (

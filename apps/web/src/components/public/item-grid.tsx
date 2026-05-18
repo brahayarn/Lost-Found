@@ -1,10 +1,12 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useItems } from "@/hooks/api/use-items";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PublicItemCard } from "./public-item-card";
 
 export function ItemGrid({ search }: { search?: string }) {
+  const t = useTranslations("itemGrid");
   const { data, isLoading, isError } = useItems({
     page: 1,
     pageSize: 12,
@@ -26,7 +28,7 @@ export function ItemGrid({ search }: { search?: string }) {
   if (isError) {
     return (
       <p className="rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-700">
-        Не вдалось завантажити знахідки.
+        {t("loadError")}
       </p>
     );
   }
@@ -34,7 +36,7 @@ export function ItemGrid({ search }: { search?: string }) {
   if (!data || data.data.length === 0) {
     return (
       <div className="rounded-xl border border-dashed border-stone-300 p-10 text-center text-sm text-stone-500">
-        Поки що нічого не знайдено.
+        {t("empty")}
       </div>
     );
   }

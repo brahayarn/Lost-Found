@@ -19,3 +19,50 @@ body {
 *:focus-visible {
   @apply outline-none ring-2 ring-stone-900/20 ring-offset-2 ring-offset-stone-50;
 }
+
+/* react-day-picker — мінімалістична темна тема */
+.rdp-lf {
+  --rdp-accent-color: #1c1917;
+  --rdp-accent-background-color: #1c1917;
+  --rdp-day-height: 2.25rem;
+  --rdp-day-width: 2.25rem;
+  --rdp-day_button-height: 2.25rem;
+  --rdp-day_button-width: 2.25rem;
+  --rdp-day_button-border-radius: 0.375rem;
+  --rdp-selected-border: none;
+  --rdp-today-color: #1c1917;
+  --rdp-weekday-padding: 0.25rem 0;
+  --rdp-nav_button-height: 1.75rem;
+  --rdp-nav_button-width: 1.75rem;
+  --rdp-nav_button-disabled-opacity: 0.3;
+  margin: 0;
+  font-size: 0.875rem;
+}
+.rdp-lf .rdp-caption_label {
+  text-transform: capitalize;
+  font-weight: 500;
+}
+.rdp-lf .rdp-weekday {
+  color: #78716c;
+  font-weight: 400;
+  font-size: 0.75rem;
+  text-transform: capitalize;
+}
+.rdp-lf .rdp-day_button:hover:not([disabled]) {
+  background: #f5f5f4;
+}
+.rdp-lf .rdp-today .rdp-day_button {
+  border: 1px solid #d6d3d1;
+}
+.rdp-lf .rdp-selected .rdp-day_button,
+.rdp-lf .rdp-selected .rdp-day_button:hover {
+  background: #1c1917;
+  color: #fff;
+  border-color: #1c1917;
+}
+.rdp-lf .rdp-disabled {
+  opacity: 0.35;
+}
+.rdp-lf .rdp-outside {
+  color: #a8a29e;
+}

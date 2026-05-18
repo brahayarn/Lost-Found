@@ -50,6 +50,9 @@ export class Claim {
   @Prop({ type: Boolean, default: false, index: true })
   identityConfirmed!: boolean;
 
+  @Prop({ type: Date })
+  identityConfirmedAt?: Date;
+
   @Prop({ type: String })
   idDocumentUrl?: string;
 }

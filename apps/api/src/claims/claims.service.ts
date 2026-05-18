@@ -71,8 +71,20 @@ export class ClaimsService {
       {
         $set: {
           identityConfirmed: true,
+          identityConfirmedAt: new Date(),
           ...(idDocumentUrl ? { idDocumentUrl } : {}),
         },
+      },
+      { new: true },
+    );
+  }
+
+  async revokeIdentity(id: string): Promise<ClaimDocument | null> {
+    return this.claimModel.findByIdAndUpdate(
+      id,
+      {
+        $set: { identityConfirmed: false },
+        $unset: { identityConfirmedAt: "" },
       },
       { new: true },
     );

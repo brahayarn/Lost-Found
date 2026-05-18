@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Trash2, Heart, Shield, Loader2 } from "lucide-react";
 import { ItemStatus, type IItem } from "@lf/shared";
 import { listItemsAdmin, disposeItems } from "@/lib/api";
+import { useCategoryLabel } from "@/lib/categories";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -36,6 +37,7 @@ const ACTION_LABEL: Record<Action, string> = {
 export default function DisposalsPage() {
   const qc = useQueryClient();
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const categoryLabel = useCategoryLabel();
 
   const { data, isLoading } = useQuery({
     queryKey: ["items", "to-dispose"],
@@ -102,7 +104,7 @@ export default function DisposalsPage() {
           <div>
             <CardTitle>Прострочені знахідки</CardTitle>
             <CardDescription>
-              Status: <Badge tone="red">TO_DISPOSE</Badge>{" "}
+              Статус: <Badge tone="red">До утилізації</Badge>{" "}
               <span className="ml-2">{rows.length} записів</span>
             </CardDescription>
           </div>
@@ -174,7 +176,7 @@ export default function DisposalsPage() {
                       </span>
                     </TD>
                     <TD className="max-w-md truncate">{item.title}</TD>
-                    <TD>{item.category}</TD>
+                    <TD>{categoryLabel(item.category)}</TD>
                     <TD className="text-xs text-stone-600">
                       {item.retentionDate
                         ? fmt(String(item.retentionDate))

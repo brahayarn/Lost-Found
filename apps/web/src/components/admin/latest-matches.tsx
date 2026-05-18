@@ -16,9 +16,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useMatchStatusLabel, useScoreLabel } from "@/lib/labels";
 
 function MatchActions({ match }: { match: MatchProposalApi }) {
   const qc = useQueryClient();
+  const statusLabel = useMatchStatusLabel();
   const invalidate = () => {
     qc.invalidateQueries({ queryKey: ["matches"] });
     qc.invalidateQueries({ queryKey: ["analytics"] });
@@ -61,7 +63,7 @@ function MatchActions({ match }: { match: MatchProposalApi }) {
   }
 
   if (match.status !== "PENDING") {
-    return <Badge tone="slate">{match.status}</Badge>;
+    return <Badge tone="slate">{statusLabel(match.status)}</Badge>;
   }
 
   return (
@@ -86,6 +88,8 @@ export function LatestMatches() {
     page: 1,
     pageSize: 10,
   });
+  const statusLabel = useMatchStatusLabel();
+  const scoreLabel = useScoreLabel();
 
   return (
     <Card>
@@ -136,7 +140,9 @@ export function LatestMatches() {
                     </span>
                   </div>
                   <div className="mt-2 flex flex-wrap items-center gap-2">
-                    <Badge tone="slate">score {m.score.toFixed(2)}</Badge>
+                    <Badge tone="slate">
+                      {scoreLabel} {m.score.toFixed(2)}
+                    </Badge>
                     <Badge
                       tone={
                         m.status === "CONFIRMED"
@@ -146,7 +152,7 @@ export function LatestMatches() {
                             : "amber"
                       }
                     >
-                      {m.status}
+                      {statusLabel(m.status)}
                     </Badge>
                     <span className="text-xs text-stone-500">
                       {m.claimId?.claimerEmail}

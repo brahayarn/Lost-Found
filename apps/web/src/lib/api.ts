@@ -299,6 +299,21 @@ export async function confirmClaimIdentity(
   }
 }
 
+export async function revokeClaimIdentity(
+  id: string,
+): Promise<{ id: string; claimNumber: string; identityConfirmed: boolean }> {
+  try {
+    const { data } = await api.post(`/claims/${id}/revoke-identity`);
+    return data as {
+      id: string;
+      claimNumber: string;
+      identityConfirmed: boolean;
+    };
+  } catch (err) {
+    throw unwrapErr(err);
+  }
+}
+
 export interface RetentionPolicyApi {
   category: string;
   days: number;

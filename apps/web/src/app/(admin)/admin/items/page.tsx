@@ -7,6 +7,9 @@ import { Printer, Handshake } from "lucide-react";
 import { ItemStatus, type IItem } from "@lf/shared";
 import { useItems } from "@/hooks/api/use-items";
 import { itemLabelUrl } from "@/lib/api";
+import { useCategoryLabel } from "@/lib/categories";
+import { useItemStatusLabel } from "@/lib/labels";
+import { useLocale } from "next-intl";
 import {
   DataTable,
   type DataTableQueryParams,
@@ -18,22 +21,25 @@ const STATUS_TONE: Record<ItemStatus, "slate" | "blue" | "amber" | "green" | "re
   [ItemStatus.NEW]: "blue",
   [ItemStatus.PUBLISHED]: "blue",
   [ItemStatus.MATCHED]: "amber",
+  [ItemStatus.VERIFICATION]: "amber",
   [ItemStatus.CLAIMED]: "amber",
   [ItemStatus.RETURNED]: "green",
   [ItemStatus.TO_DISPOSE]: "red",
   [ItemStatus.ARCHIVED]: "slate",
 };
 
-const formatDate = (iso: string) =>
-  new Date(iso).toLocaleString("uk-UA", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-
 export default function AdminItemsPage() {
+  const locale = useLocale();
+  const formatDate = (iso: string) =>
+    new Date(iso).toLocaleString(locale === "uk" ? "uk-UA" : "en-US", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  const categoryLabel = useCategoryLabel();
+  const statusLabel = useItemStatusLabel();
   const [params, setParams] = useState<DataTableQueryParams>({
     page: 1,
     pageSize: 20,
@@ -72,13 +78,17 @@ export default function AdminItemsPage() {
           </div>
         ),
       },
-      { accessorKey: "category", header: "Категорія" },
+      {
+        accessorKey: "category",
+        header: "Категорія",
+        cell: ({ row }) => categoryLabel(row.original.category),
+      },
       {
         accessorKey: "status",
         header: "Статус",
         cell: ({ row }) => (
           <Badge tone={STATUS_TONE[row.original.status]}>
-            {row.original.status}
+            {statusLabel(row.original.status)}
           </Badge>
         ),
       },
@@ -125,7 +135,7 @@ export default function AdminItemsPage() {
         ),
       },
     ],
-    [],
+    [categoryLabel, statusLabel, formatDate],
   );
 
   return (

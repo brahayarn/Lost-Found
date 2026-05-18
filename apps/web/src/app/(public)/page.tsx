@@ -1,30 +1,31 @@
+import { getTranslations } from "next-intl/server";
 import { Search } from "lucide-react";
 import { ItemGrid } from "@/components/public/item-grid";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-export default function HomePage({
+export default async function HomePage({
   searchParams,
 }: {
   searchParams: { q?: string };
 }) {
   const q = searchParams.q?.trim() || undefined;
+  const t = await getTranslations("home");
 
   return (
     <main>
       <section className="border-b border-stone-200 bg-white">
         <div className="mx-auto max-w-3xl px-4 py-16 text-center md:px-6 md:py-24">
           <h1 className="text-4xl font-semibold tracking-tight text-stone-900 md:text-5xl">
-            Знайшли. Збережемо. Повернемо.
+            {t("heroTitle")}
           </h1>
           <p className="mt-4 text-base text-stone-500 md:text-lg">
-            Платформа обліку загублених речей. Введіть опис або код LF, щоб
-            перевірити чи ваша річ у нас.
+            {t("heroSubtitle")}
           </p>
 
           <div className="mt-6 flex justify-center">
             <Button asChild variant="outline" size="sm">
-              <a href="/claim/new">Я загубив свою річ →</a>
+              <a href="/claim/new">{t("lostMyItem")}</a>
             </Button>
           </div>
 
@@ -34,12 +35,12 @@ export default function HomePage({
               <Input
                 name="q"
                 defaultValue={q}
-                placeholder="Опис речі або код LF-2026-…"
+                placeholder={t("searchPlaceholder")}
                 className="h-12 rounded-full border-stone-300 bg-stone-50 pl-11 text-base"
               />
             </div>
             <Button type="submit" size="lg" className="h-12 rounded-full px-8">
-              Пошук
+              {t("search")}
             </Button>
           </form>
         </div>
@@ -49,11 +50,9 @@ export default function HomePage({
         <div className="mb-6 flex items-end justify-between">
           <div>
             <h2 className="text-xl font-semibold tracking-tight">
-              {q ? "Результати пошуку" : "Останні знахідки"}
+              {q ? t("searchResults") : t("latest")}
             </h2>
-            <p className="text-sm text-stone-500">
-              Фото приховані — тільки власник побачить чітке зображення.
-            </p>
+            <p className="text-sm text-stone-500">{t("photoHidden")}</p>
           </div>
         </div>
         <ItemGrid search={q} />

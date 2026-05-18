@@ -443,8 +443,8 @@ async function main() {
 
   // Counter для items:YEAR — встановимо в максимум
   await Counter.updateOne(
-    { key: `items:${year}` },
-    { $set: { key: `items:${year}`, seq: itemSeeds.length } },
+    { _id: `items:${year}` },
+    { $set: { seq: itemSeeds.length } },
     { upsert: true },
   );
 
@@ -551,8 +551,8 @@ async function main() {
     claimIdsBySeq.set(c.seq, created._id as Types.ObjectId);
   }
   await Counter.updateOne(
-    { key: `claims:${year}` },
-    { $set: { key: `claims:${year}`, seq: claimSeeds.length } },
+    { _id: `claims:${year}` },
+    { $set: { seq: claimSeeds.length } },
     { upsert: true },
   );
 

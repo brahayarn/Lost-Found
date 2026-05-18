@@ -52,7 +52,7 @@ export class ClaimsController {
   }
 
   @Patch(":id/status")
-  @Roles(UserRole.OPERATOR, UserRole.ADMIN)
+  @Roles(UserRole.OPERATOR, UserRole.MANAGER, UserRole.ADMIN)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: "Змінити статус заявки" })
   async setStatus(
@@ -77,7 +77,7 @@ export class ClaimsController {
   }
 
   @Post(":id/confirm-identity")
-  @Roles(UserRole.OPERATOR, UserRole.ADMIN)
+  @Roles(UserRole.OPERATOR, UserRole.MANAGER, UserRole.ADMIN)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Підтвердити особу заявника (для видачі цінних речей)",
@@ -90,6 +90,22 @@ export class ClaimsController {
       id,
       body?.idDocumentUrl,
     );
+    if (!claim) throw new NotFoundException("Claim not found");
+    return {
+      id: claim._id.toString(),
+      claimNumber: claim.claimNumber,
+      identityConfirmed: claim.identityConfirmed,
+    };
+  }
+
+  @Post(":id/revoke-identity")
+  @Roles(UserRole.OPERATOR, UserRole.MANAGER, UserRole.ADMIN)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "Скасувати підтвердження особи заявника",
+  })
+  async revokeIdentity(@Param("id") id: string) {
+    const claim = await this.claimsService.revokeIdentity(id);
     if (!claim) throw new NotFoundException("Claim not found");
     return {
       id: claim._id.toString(),

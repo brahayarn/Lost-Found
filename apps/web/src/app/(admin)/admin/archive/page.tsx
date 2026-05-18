@@ -14,21 +14,29 @@ import {
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import { DatePicker } from "@/components/ui/date-picker";
+import { useLocale } from "next-intl";
 
-const fmt = (iso: string) =>
-  new Date(iso).toLocaleString("uk-UA", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+const toIsoDate = (d: Date | undefined): string => {
+  if (!d) return "";
+  const tz = d.getTimezoneOffset() * 60000;
+  return new Date(d.getTime() - tz).toISOString().slice(0, 10);
+};
 
 export default function ArchivePage() {
+  const locale = useLocale();
+  const fmt = (iso: string) =>
+    new Date(iso).toLocaleString(locale === "uk" ? "uk-UA" : "en-US", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const [from, setFrom] = useState("");
-  const [to, setTo] = useState("");
+  const [from, setFrom] = useState<Date | undefined>();
+  const [to, setTo] = useState<Date | undefined>();
 
   const { data, isLoading } = useQuery({
     queryKey: ["handover-acts", page, search, from, to],
@@ -37,8 +45,8 @@ export default function ArchivePage() {
         page,
         pageSize: 20,
         search,
-        from: from || undefined,
-        to: to || undefined,
+        from: from ? toIsoDate(from) : undefined,
+        to: to ? toIsoDate(to) : undefined,
       }),
     placeholderData: (prev) => prev,
   });
@@ -63,17 +71,17 @@ export default function ArchivePage() {
             <CardTitle>Акти ({data?.total ?? 0})</CardTitle>
           </div>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-            <Input
-              type="date"
+            <DatePicker
               value={from}
-              onChange={(e) => setFrom(e.target.value)}
+              onChange={setFrom}
               placeholder="Від"
+              clearable
             />
-            <Input
-              type="date"
+            <DatePicker
               value={to}
-              onChange={(e) => setTo(e.target.value)}
+              onChange={setTo}
               placeholder="До"
+              clearable
             />
             <Input
               placeholder="Оператор / нотатки"

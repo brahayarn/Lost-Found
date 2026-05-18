@@ -18,6 +18,7 @@ import {
   fetchClaim,
   updateClaimStatus,
   confirmClaimIdentity,
+  revokeClaimIdentity,
   listMatches,
 } from "@/lib/api";
 import { Button } from "@/components/ui/button";
@@ -36,6 +37,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useLocale } from "next-intl";
+import { useCategoryLabel } from "@/lib/categories";
+import {
+  useClaimStatusLabel,
+  useMatchStatusLabel,
+  useScoreLabel,
+} from "@/lib/labels";
+import { useCurrentUser } from "@/lib/auth/use-current-user";
+import { UserRole } from "@lf/shared";
 
 const STATUS_TONE: Record<
   ClaimStatus,
@@ -49,18 +59,27 @@ const STATUS_TONE: Record<
   [ClaimStatus.REJECTED]: "red",
 };
 
-const fmt = (iso: string) =>
-  new Date(iso).toLocaleString("uk-UA", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-
 export default function AdminClaimDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const qc = useQueryClient();
+  const locale = useLocale();
+  const categoryLabel = useCategoryLabel();
+  const claimStatusLabel = useClaimStatusLabel();
+  const matchStatusLabel = useMatchStatusLabel();
+  const scoreLabel = useScoreLabel();
+  const { data: me } = useCurrentUser();
+  const canEdit =
+    me?.role === UserRole.OPERATOR ||
+    me?.role === UserRole.MANAGER ||
+    me?.role === UserRole.ADMIN;
+  const fmt = (iso: string) =>
+    new Date(iso).toLocaleString(locale === "uk" ? "uk-UA" : "en-US", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
 
   const claimQ = useQuery({
     queryKey: ["claim", id],
@@ -78,7 +97,7 @@ export default function AdminClaimDetailsPage() {
     mutationFn: (status: ClaimStatus) => updateClaimStatus(id, status),
     onSuccess: (r) => {
       toast.success("Статус оновлено", {
-        description: `${r.claimNumber} → ${r.status}`,
+        description: `${r.claimNumber} → ${claimStatusLabel(r.status)}`,
       });
       qc.invalidateQueries({ queryKey: ["claim", id] });
       qc.invalidateQueries({ queryKey: ["claims"] });
@@ -93,6 +112,20 @@ export default function AdminClaimDetailsPage() {
     mutationFn: () => confirmClaimIdentity(id),
     onSuccess: (r) => {
       toast.success("Особу підтверджено", {
+        description: `${r.claimNumber}`,
+      });
+      qc.invalidateQueries({ queryKey: ["claim", id] });
+    },
+    onError: (e) =>
+      toast.error("Не вдалось", {
+        description: e instanceof Error ? e.message : undefined,
+      }),
+  });
+
+  const revokeIdentityMutation = useMutation({
+    mutationFn: () => revokeClaimIdentity(id),
+    onSuccess: (r) => {
+      toast.success("Підтвердження скасовано", {
         description: `${r.claimNumber}`,
       });
       qc.invalidateQueries({ queryKey: ["claim", id] });
@@ -141,7 +174,7 @@ export default function AdminClaimDetailsPage() {
             </h1>
           </div>
           <div className="flex items-center gap-2">
-            <Badge tone={STATUS_TONE[claim.status]}>{claim.status}</Badge>
+            <Badge tone={STATUS_TONE[claim.status]}>{claimStatusLabel(claim.status)}</Badge>
             {claim.identityConfirmed && (
               <Badge tone="green">
                 <ShieldCheck className="mr-1 h-3 w-3" /> Особу підтверджено
@@ -151,8 +184,14 @@ export default function AdminClaimDetailsPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
+      <div
+        className={
+          canEdit
+            ? "grid grid-cols-1 gap-5 lg:grid-cols-3"
+            : "grid grid-cols-1 gap-5"
+        }
+      >
+        <Card className={canEdit ? "lg:col-span-2" : ""}>
           <CardHeader>
             <CardTitle>Опис втрати</CardTitle>
           </CardHeader>
@@ -163,7 +202,7 @@ export default function AdminClaimDetailsPage() {
               <div className="flex items-center gap-2">
                 <Tag className="h-3.5 w-3.5 text-stone-400" />
                 <dt className="text-stone-500">Категорія:</dt>
-                <dd>{claim.category}</dd>
+                <dd>{categoryLabel(claim.category)}</dd>
               </div>
               <div className="flex items-center gap-2">
                 <Calendar className="h-3.5 w-3.5 text-stone-400" />
@@ -191,6 +230,7 @@ export default function AdminClaimDetailsPage() {
           </CardContent>
         </Card>
 
+        {canEdit && (
         <Card>
           <CardHeader>
             <CardTitle>Дії</CardTitle>
@@ -213,36 +253,81 @@ export default function AdminClaimDetailsPage() {
                 <SelectContent>
                   {Object.values(ClaimStatus).map((s) => (
                     <SelectItem key={s} value={s}>
-                      {s}
+                      {claimStatusLabel(s)}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
 
-            {!claim.identityConfirmed && (
-              <div>
-                <p className="mb-1 text-xs uppercase tracking-wide text-stone-500">
-                  Верифікація
-                </p>
-                <Button
-                  className="w-full"
-                  variant="outline"
-                  onClick={() => identityMutation.mutate()}
-                  disabled={identityMutation.isPending}
-                >
-                  <ShieldCheck className="mr-2 h-4 w-4" />
-                  {identityMutation.isPending
-                    ? "Підтверджуємо…"
-                    : "Підтвердити особу"}
-                </Button>
-                <p className="mt-2 text-xs text-stone-500">
-                  Обов’язково перед видачею цінних речей.
-                </p>
-              </div>
-            )}
+            <div>
+              <p className="mb-1 text-xs uppercase tracking-wide text-stone-500">
+                Верифікація особи
+              </p>
+              {!claim.identityConfirmed ? (
+                <>
+                  <p className="mb-2 text-xs text-stone-600 leading-relaxed">
+                    Перевірте у заявника документ (паспорт, водійське
+                    посвідчення тощо) і впевніться, що людина — справді той,
+                    за кого видає себе. Це обовʼязково перед видачею цінних
+                    речей (телефон, гаманець, ключі, прикраси).
+                  </p>
+                  <Button
+                    className="w-full"
+                    variant="outline"
+                    onClick={() => {
+                      if (
+                        confirm(
+                          "Підтверджуєте, що особисто перевірили документ заявника? Цю дію видно в журналі аудиту.",
+                        )
+                      ) {
+                        identityMutation.mutate();
+                      }
+                    }}
+                    disabled={identityMutation.isPending}
+                  >
+                    <ShieldCheck className="mr-2 h-4 w-4" />
+                    {identityMutation.isPending
+                      ? "Підтверджуємо…"
+                      : "Підтвердити особу"}
+                  </Button>
+                </>
+              ) : (
+                <div className="rounded-md border border-green-200 bg-green-50 p-3">
+                  <p className="flex items-center gap-1.5 text-sm font-medium text-green-800">
+                    <ShieldCheck className="h-4 w-4" />
+                    Особу підтверджено
+                  </p>
+                  {claim.identityConfirmedAt && (
+                    <p className="mt-0.5 text-xs text-green-700">
+                      {fmt(claim.identityConfirmedAt as unknown as string)}
+                    </p>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="mt-2 h-7 px-2 text-xs text-stone-600 hover:text-red-700"
+                    onClick={() => {
+                      if (
+                        confirm(
+                          "Скасувати підтвердження особи? Знадобиться повторна верифікація перед видачею.",
+                        )
+                      ) {
+                        revokeIdentityMutation.mutate();
+                      }
+                    }}
+                    disabled={revokeIdentityMutation.isPending}
+                  >
+                    {revokeIdentityMutation.isPending
+                      ? "Скасовуємо…"
+                      : "Скасувати підтвердження"}
+                  </Button>
+                </div>
+              )}
+            </div>
           </CardContent>
         </Card>
+        )}
       </div>
 
       <Card>
@@ -268,7 +353,7 @@ export default function AdminClaimDetailsPage() {
                       {m.itemId?.title ?? "—"}
                     </p>
                     <p className="font-mono text-xs text-stone-500">
-                      {m.itemId?.itemNumber} · score {m.score.toFixed(2)}
+                      {m.itemId?.itemNumber} · {scoreLabel} {m.score.toFixed(2)}
                     </p>
                   </div>
                   <Badge
@@ -280,7 +365,7 @@ export default function AdminClaimDetailsPage() {
                           : "amber"
                     }
                   >
-                    {m.status}
+                    {matchStatusLabel(m.status)}
                   </Badge>
                   {m.itemId && (
                     <Button asChild size="sm" variant="outline">

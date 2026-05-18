@@ -4,22 +4,27 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import type { ColumnDef } from "@tanstack/react-table";
 import { type IClaim } from "@lf/shared";
+import { useLocale } from "next-intl";
 import { useClaims } from "@/hooks/api/use-claims";
 import {
   DataTable,
   type DataTableQueryParams,
 } from "@/components/data-table/data-table";
 import { Badge } from "@/components/ui/badge";
-
-const formatDate = (iso: string) =>
-  new Date(iso).toLocaleString("uk-UA", {
-    day: "2-digit",
-    month: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+import { useCategoryLabel } from "@/lib/categories";
+import { useClaimStatusLabel } from "@/lib/labels";
 
 export default function AdminClaimsPage() {
+  const locale = useLocale();
+  const categoryLabel = useCategoryLabel();
+  const statusLabel = useClaimStatusLabel();
+  const formatDate = (iso: string) =>
+    new Date(iso).toLocaleString(locale === "uk" ? "uk-UA" : "en-US", {
+      day: "2-digit",
+      month: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   const [params, setParams] = useState<DataTableQueryParams>({
     page: 1,
     pageSize: 20,
@@ -55,11 +60,17 @@ export default function AdminClaimsPage() {
           </span>
         ),
       },
-      { accessorKey: "category", header: "Категорія" },
+      {
+        accessorKey: "category",
+        header: "Категорія",
+        cell: ({ row }) => categoryLabel(row.original.category),
+      },
       {
         accessorKey: "status",
         header: "Статус",
-        cell: ({ row }) => <Badge tone="blue">{row.original.status}</Badge>,
+        cell: ({ row }) => (
+          <Badge tone="blue">{statusLabel(row.original.status)}</Badge>
+        ),
       },
       { accessorKey: "claimerEmail", header: "Email" },
       {
@@ -72,7 +83,7 @@ export default function AdminClaimsPage() {
         ),
       },
     ],
-    [],
+    [categoryLabel, statusLabel, formatDate],
   );
 
   return (

@@ -1,16 +1,21 @@
+"use client";
+
 import Link from "next/link";
+import { useLocale } from "next-intl";
 import { ImageOff, MapPin, Calendar, Tag } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useCategoryLabel } from "@/lib/categories";
 import type { IItem } from "@lf/shared";
 
-const formatDate = (iso: string) =>
-  new Date(iso).toLocaleDateString("uk-UA", {
-    day: "2-digit",
-    month: "long",
-  });
-
 export function PublicItemCard({ item }: { item: IItem }) {
+  const locale = useLocale();
+  const categoryLabel = useCategoryLabel();
+  const formatDate = (iso: string) =>
+    new Date(iso).toLocaleDateString(locale === "uk" ? "uk-UA" : "en-US", {
+      day: "2-digit",
+      month: "long",
+    });
   const photo = item.photoUrls?.[0];
 
   return (
@@ -36,7 +41,7 @@ export function PublicItemCard({ item }: { item: IItem }) {
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-stone-900/10 to-transparent" />
         <Badge tone="slate" className="absolute left-3 top-3 bg-white/90">
           <Tag className="mr-1 h-3 w-3" />
-          {item.category}
+          {categoryLabel(item.category)}
         </Badge>
       </div>
 

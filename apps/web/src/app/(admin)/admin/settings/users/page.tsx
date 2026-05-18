@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Trash2, UserPlus } from "lucide-react";
+import { Trash2, UserPlus, Eye, EyeOff } from "lucide-react";
 import { UserRole, type IUser } from "@lf/shared";
 import {
   listUsers,
@@ -59,6 +59,7 @@ const ROLE_OPTIONS = [
 export default function UsersPage() {
   const qc = useQueryClient();
   const [showForm, setShowForm] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const { data: users, isLoading } = useQuery({
     queryKey: ["users"],
@@ -171,11 +172,31 @@ export default function UsersPage() {
                     <FormItem>
                       <FormLabel>Пароль</FormLabel>
                       <FormControl>
-                        <Input
-                          type="password"
-                          placeholder="мін. 6 символів"
-                          {...field}
-                        />
+                        <div className="relative">
+                          <Input
+                            type={showPassword ? "text" : "password"}
+                            placeholder="мін. 6 символів"
+                            className="pr-10"
+                            {...field}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword((s) => !s)}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-stone-400 hover:bg-stone-100 hover:text-stone-700 focus:outline-none focus:ring-2 focus:ring-stone-400"
+                            aria-label={
+                              showPassword
+                                ? "Сховати пароль"
+                                : "Показати пароль"
+                            }
+                            tabIndex={-1}
+                          >
+                            {showPassword ? (
+                              <EyeOff className="h-4 w-4" />
+                            ) : (
+                              <Eye className="h-4 w-4" />
+                            )}
+                          </button>
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>

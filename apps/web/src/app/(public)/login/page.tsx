@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
@@ -7,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
-import { Lock } from "lucide-react";
+import { Lock, Eye, EyeOff } from "lucide-react";
 import { LoginSchema, type LoginDto, type AuthLoginResponse } from "@lf/shared";
 import { login } from "@/lib/api";
 import { tokenStorage } from "@/lib/auth/token";
@@ -35,6 +36,7 @@ export default function LoginPage() {
   const next = search.get("next") || "/admin";
   const qc = useQueryClient();
   const t = useTranslations("login");
+  const [showPassword, setShowPassword] = useState(false);
 
   const form = useForm<LoginDto>({
     resolver: zodResolver(LoginSchema),
@@ -98,12 +100,32 @@ export default function LoginPage() {
                   <FormItem>
                     <FormLabel>{t("password")}</FormLabel>
                     <FormControl>
-                      <Input
-                        type="password"
-                        autoComplete="current-password"
-                        placeholder="••••••••"
-                        {...field}
-                      />
+                      <div className="relative">
+                        <Input
+                          type={showPassword ? "text" : "password"}
+                          autoComplete="current-password"
+                          placeholder="••••••••"
+                          className="pr-10"
+                          {...field}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword((s) => !s)}
+                          className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-stone-400 hover:bg-stone-100 hover:text-stone-700 focus:outline-none focus:ring-2 focus:ring-stone-400"
+                          aria-label={
+                            showPassword
+                              ? "Сховати пароль"
+                              : "Показати пароль"
+                          }
+                          tabIndex={-1}
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-4 w-4" />
+                          ) : (
+                            <Eye className="h-4 w-4" />
+                          )}
+                        </button>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -122,16 +144,11 @@ export default function LoginPage() {
 
           <p className="mt-6 text-center text-xs text-stone-500">
             <Link href="/" className="underline-offset-2 hover:underline">
-              На головну
+              {t("backHome")}
             </Link>
           </p>
         </CardContent>
       </Card>
-
-      <p className="mt-6 text-center text-xs text-stone-400">
-        Dev seed: <span className="font-mono">admin@lf.com</span> /{" "}
-        <span className="font-mono">password123</span>
-      </p>
     </main>
   );
 }

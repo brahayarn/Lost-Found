@@ -20,6 +20,7 @@ export interface IClaim {
   claimerEmail: string;
   claimerPhone?: string;
   identityConfirmed?: boolean;
+  identityConfirmedAt?: string;
   idDocumentUrl?: string;
   createdAt: string;
   updatedAt: string;

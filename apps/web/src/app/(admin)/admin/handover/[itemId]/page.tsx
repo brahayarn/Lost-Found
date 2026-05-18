@@ -25,11 +25,13 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { useCategoryLabel } from "@/lib/categories";
+import { useItemStatusLabel } from "@/lib/labels";
 
 // SignatureCanvas використовує canvas API → SSR off
 const SigCanvas = dynamic(() => import("react-signature-canvas"), {
   ssr: false,
-});
+}) as unknown as typeof SignatureCanvas;
 
 interface HandoverBody {
   signature: string;
@@ -47,6 +49,8 @@ export default function HandoverPage() {
   const sigRef = useRef<SignatureCanvas | null>(null);
   const [notes, setNotes] = useState("");
   const [empty, setEmpty] = useState(true);
+  const categoryLabel = useCategoryLabel();
+  const itemStatusLabel = useItemStatusLabel();
 
   const { data: item, isLoading, isError } = useItemFull(itemId);
 
@@ -94,7 +98,7 @@ export default function HandoverPage() {
         <h1 className="text-2xl font-semibold tracking-tight">Видача речі</h1>
         <p className="text-sm text-stone-500">
           Зафіксуйте підпис власника та підтвердіть передачу. Це створить акт у
-          базі та змінить статус речі на RETURNED.
+          базі та змінить статус речі на «Повернено».
         </p>
       </div>
 
@@ -135,11 +139,11 @@ export default function HandoverPage() {
                   {item.description}
                 </p>
                 <div className="flex items-center gap-2 pt-1">
-                  <Badge tone="slate">{item.category}</Badge>
+                  <Badge tone="slate">{categoryLabel(item.category)}</Badge>
                   <Badge
                     tone={item.status === "RETURNED" ? "green" : "blue"}
                   >
-                    {item.status}
+                    {itemStatusLabel(item.status)}
                   </Badge>
                   {claimId && <Badge tone="amber">claim {claimId.slice(-6)}</Badge>}
                 </div>

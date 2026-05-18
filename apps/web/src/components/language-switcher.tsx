@@ -1,7 +1,6 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
 import { Globe } from "lucide-react";
 import Cookies from "js-cookie";
 import {
@@ -24,7 +23,6 @@ export function LanguageSwitcher({
 }) {
   const locale = useLocale();
   const t = useTranslations("language");
-  const router = useRouter();
 
   const onChange = (next: string) => {
     if (next === locale) return;
@@ -33,7 +31,7 @@ export function LanguageSwitcher({
       sameSite: "lax",
       path: "/",
     });
-    router.refresh();
+    window.location.reload();
   };
 
   return (
@@ -41,7 +39,7 @@ export function LanguageSwitcher({
       {!compact && <Globe className="h-4 w-4 text-stone-500" />}
       <Select value={locale} onValueChange={onChange}>
         <SelectTrigger
-          className={compact ? "h-8 w-[100px]" : "h-8 w-[140px]"}
+          className={compact ? "h-8 w-[140px]" : "h-8 w-[160px]"}
           aria-label={t("label")}
         >
           <SelectValue />

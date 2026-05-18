@@ -28,6 +28,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useCategoryLabel } from "@/lib/categories";
+import { useItemStatusLabel } from "@/lib/labels";
+import { useLocale } from "next-intl";
 
 const STATUS_TONE: Record<
   ItemStatus,
@@ -43,26 +46,28 @@ const STATUS_TONE: Record<
   [ItemStatus.ARCHIVED]: "slate",
 };
 
-const fmt = (iso: string) =>
-  new Date(iso).toLocaleString("uk-UA", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-
 export default function AdminItemDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const qc = useQueryClient();
   const { data: item, isLoading, isError } = useItemFull(id);
   const [verifNotes, setVerifNotes] = useState("");
+  const locale = useLocale();
+  const categoryLabel = useCategoryLabel();
+  const statusLabel = useItemStatusLabel();
+  const fmt = (iso: string) =>
+    new Date(iso).toLocaleString(locale === "uk" ? "uk-UA" : "en-US", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
 
   const verifyMutation = useMutation({
     mutationFn: (notes: string) => verifyItem(id, notes),
     onSuccess: (r) => {
       toast.success("Верифіковано", {
-        description: `${r.itemNumber} → ${r.status}`,
+        description: `${r.itemNumber} → ${statusLabel(r.status)}`,
       });
       setVerifNotes("");
       qc.invalidateQueries({ queryKey: ["item", id] });
@@ -110,7 +115,7 @@ export default function AdminItemDetailsPage() {
             </h1>
           </div>
           <div className="flex items-center gap-2">
-            <Badge tone={STATUS_TONE[item.status]}>{item.status}</Badge>
+            <Badge tone={STATUS_TONE[item.status]}>{statusLabel(item.status)}</Badge>
             {item.isValuable && <Badge tone="amber">Цінна</Badge>}
           </div>
         </div>
@@ -128,7 +133,7 @@ export default function AdminItemDetailsPage() {
               <div className="flex items-center gap-2">
                 <Tag className="h-3.5 w-3.5 text-stone-400" />
                 <dt className="text-stone-500">Категорія:</dt>
-                <dd>{item.category}</dd>
+                <dd>{categoryLabel(item.category)}</dd>
               </div>
               <div className="flex items-center gap-2">
                 <Calendar className="h-3.5 w-3.5 text-stone-400" />
