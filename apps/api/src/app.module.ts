@@ -24,6 +24,27 @@ import { AnalyticsModule } from "./analytics/analytics.module";
 import { AuditModule } from "./audit/audit.module";
 import { SubscriptionsModule } from "./subscriptions/subscriptions.module";
 
+function buildRedisConnection(cfg: ConfigService) {
+  const url = cfg.get<string>("REDIS_URL");
+  if (url) {
+    const u = new URL(url);
+    return {
+      host: u.hostname,
+      port: Number(u.port || 6379),
+      username: u.username || undefined,
+      password: u.password ? decodeURIComponent(u.password) : undefined,
+      tls: u.protocol === "rediss:" ? {} : undefined,
+      maxRetriesPerRequest: null,
+    };
+  }
+  return {
+    host: cfg.get<string>("REDIS_HOST", "localhost"),
+    port: Number(cfg.get<string>("REDIS_PORT", "6379")),
+    password: cfg.get<string>("REDIS_PASSWORD") || undefined,
+    maxRetriesPerRequest: null,
+  };
+}
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -42,10 +63,7 @@ import { SubscriptionsModule } from "./subscriptions/subscriptions.module";
     BullModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (cfg: ConfigService) => ({
-        connection: {
-          host: cfg.get<string>("REDIS_HOST", "localhost"),
-          port: Number(cfg.get<string>("REDIS_PORT", "6379")),
-        },
+        connection: buildRedisConnection(cfg),
       }),
     }),
     ScheduleModule.forRoot(),

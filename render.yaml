@@ -1,0 +1,44 @@
+services:
+  - type: web
+    name: lf-api
+    runtime: node
+    plan: free
+    region: frankfurt
+    rootDir: .
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter @lf/shared build && pnpm --filter @lf/api build
+    startCommand: pnpm --filter @lf/api start
+    healthCheckPath: /api/docs
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: PORT
+        value: "10000"
+      - key: JWT_EXPIRES_IN
+        value: 15m
+      - key: REFRESH_EXPIRES_IN
+        value: 30d
+      - key: MAIL_FROM
+        value: Lost & Found <onboarding@resend.dev>
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: lf-redis
+          property: connectionString
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: STAFF_EMAILS
+        sync: false
+      - key: WEB_ORIGIN
+        sync: false
+
+  - type: redis
+    name: lf-redis
+    plan: free
+    region: frankfurt
+    maxmemoryPolicy: noeviction
+    ipAllowList: []

@@ -77,7 +77,7 @@ export function DatePicker({
           selected={value}
           onSelect={(d) => onChange?.(d ?? undefined)}
           disabled={disabled}
-          initialFocus
+          autoFocus
         />
       </PopoverContent>
     </Popover>

@@ -14,12 +14,16 @@ async function bootstrap() {
   app.use(json({ limit: "5mb" }));
   app.use(urlencoded({ extended: true, limit: "5mb" }));
 
+  const allowedOrigins = [
+    "http://localhost:3001",
+    "http://127.0.0.1:3001",
+    ...(process.env.WEB_ORIGIN ?? "")
+      .split(",")
+      .map((o) => o.trim())
+      .filter(Boolean),
+  ];
   app.enableCors({
-    origin: [
-      "http://localhost:3001",
-      "http://127.0.0.1:3001",
-      process.env.WEB_ORIGIN ?? "http://localhost:3001",
-    ],
+    origin: allowedOrigins,
     credentials: true,
   });
 
