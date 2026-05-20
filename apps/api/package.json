@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "rm -rf dist tsconfig.tsbuildinfo && nest start --watch",
-    "build": "nest build",
+    "build": "rm -rf dist tsconfig.tsbuildinfo && nest build",
     "start": "node dist/main.js",
     "lint": "eslint \"src/**/*.ts\" --max-warnings=0",
     "clean": "rm -rf dist .turbo node_modules",
