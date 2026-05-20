@@ -55,6 +55,7 @@ export class ItemsService {
             itemNumber: item.itemNumber,
             itemTitle: item.title,
             category: item.category,
+            unsubscribeToken: s.unsubscribeToken,
           } satisfies SubscriptionMatchJob,
           { attempts: 3, backoff: { type: "exponential", delay: 5000 } },
         );

@@ -46,30 +46,36 @@ export class PdfService {
       doc.on("error", reject);
 
       const padding = 3 * MM;
-      const qrSize = 28 * MM;
+      const qrSize = 24 * MM;
       const qrX = LABEL_W - qrSize - padding;
       const qrY = (LABEL_H - qrSize) / 2;
+      const textW = qrX - padding - 2;
 
-      // Brand
+      // Brand row
+      doc
+        .fillColor("#1c1917")
+        .font("Helvetica-Bold")
+        .fontSize(10)
+        .text("L&F", padding, padding, { width: textW, lineBreak: false });
+
+      doc
+        .font("Helvetica")
+        .fontSize(5.5)
+        .fillColor("#78716c")
+        .text("Lost & Found", padding, padding + 11, {
+          width: textW,
+          lineBreak: false,
+        });
+
+      // Item number — головний рядок (вмістити в один рядок)
       doc
         .fillColor("#1c1917")
         .font("Helvetica-Bold")
         .fontSize(11)
-        .text("L&F", padding, padding);
-
-      doc
-        .font("Helvetica")
-        .fontSize(6)
-        .fillColor("#78716c")
-        .text("Lost & Found", padding, padding + 12);
-
-      // Item number — head text
-      doc
-        .fillColor("#1c1917")
-        .font("Helvetica-Bold")
-        .fontSize(13)
         .text(input.itemNumber, padding, padding + 24, {
-          width: qrX - padding - 2,
+          width: textW,
+          lineBreak: false,
+          ellipsis: true,
         });
 
       // Category
@@ -77,19 +83,23 @@ export class PdfService {
         CATEGORY_LABEL[input.category] ?? input.category;
       doc
         .font("Helvetica")
-        .fontSize(8)
+        .fontSize(7.5)
         .fillColor("#44403c")
-        .text(categoryLabel, padding, padding + 42, {
-          width: qrX - padding - 2,
+        .text(categoryLabel, padding, padding + 41, {
+          width: textW,
+          lineBreak: false,
+          ellipsis: true,
         });
 
-      // Tracking code (small, monospace-style)
+      // Tracking code (knu bottom)
       doc
         .font("Courier")
-        .fontSize(7)
+        .fontSize(6.5)
         .fillColor("#78716c")
-        .text(input.trackingCode, padding, LABEL_H - padding - 8, {
-          width: qrX - padding - 2,
+        .text(input.trackingCode, padding, LABEL_H - padding - 7, {
+          width: textW,
+          lineBreak: false,
+          ellipsis: true,
         });
 
       // QR

@@ -81,4 +81,19 @@ export class SubscriptionsController {
     if (!sub) throw new NotFoundException("Subscription not found");
     return { id: sub._id.toString(), active: sub.active };
   }
+
+  @Post("unsubscribe")
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: "Самостійна відписка через токен з листа" })
+  async unsubscribeByToken(@Body() body: { token?: string }) {
+    if (!body?.token) throw new BadRequestException("Token required");
+    const sub = await this.service.deactivateByToken(body.token);
+    if (!sub) throw new NotFoundException("Invalid or expired token");
+    return {
+      email: sub.email,
+      category: sub.category,
+      active: sub.active,
+    };
+  }
 }

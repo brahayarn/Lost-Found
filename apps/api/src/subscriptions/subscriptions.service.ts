@@ -1,11 +1,16 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
+import { randomBytes } from "crypto";
 import { ItemCategory } from "@lf/shared";
 import {
   Subscription,
   SubscriptionDocument,
 } from "./subscription.schema";
+
+function generateToken(): string {
+  return randomBytes(24).toString("base64url");
+}
 
 export interface CreateSubscriptionInput {
   email: string;
@@ -35,11 +40,27 @@ export class SubscriptionsService {
       },
       {
         $set: { keywords, active: true },
-        $setOnInsert: { email: input.email.toLowerCase().trim() },
+        $setOnInsert: {
+          email: input.email.toLowerCase().trim(),
+          unsubscribeToken: generateToken(),
+        },
       },
       { new: true, upsert: true, setDefaultsOnInsert: true },
     );
+    // Backfill token for legacy subs without one
+    if (!doc.unsubscribeToken) {
+      doc.unsubscribeToken = generateToken();
+      await doc.save();
+    }
     return doc;
+  }
+
+  async deactivateByToken(token: string) {
+    return this.model.findOneAndUpdate(
+      { unsubscribeToken: token },
+      { $set: { active: false } },
+      { new: true },
+    );
   }
 
   async list(params: {

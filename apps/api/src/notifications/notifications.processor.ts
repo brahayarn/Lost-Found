@@ -28,6 +28,21 @@ export class NotificationsProcessor extends WorkerHost {
     return this.cfg.get<string>("WEB_ORIGIN", "http://localhost:3001");
   }
 
+  private appendUnsubscribe<T extends { html: string; text: string; subject: string }>(
+    rendered: T,
+    token: string | undefined,
+  ): T {
+    if (!token) return rendered;
+    const url = `${this.webOrigin()}/unsubscribe?token=${encodeURIComponent(token)}`;
+    const htmlFooter = `<p style="margin-top:24px;padding-top:16px;border-top:1px solid #e7e5e4;color:#a8a29e;font-size:12px;text-align:center;">Не хочете отримувати такі листи? <a href="${url}" style="color:#78716c;text-decoration:underline;">Відписатись від сповіщень</a></p>`;
+    const textFooter = `\n\n—\nЩоб відписатись від сповіщень: ${url}`;
+    return {
+      ...rendered,
+      html: `${rendered.html}${htmlFooter}`,
+      text: `${rendered.text}${textFooter}`,
+    };
+  }
+
   private staffRecipients(): string[] {
     const raw = this.cfg.get<string>("STAFF_EMAILS", "");
     return raw
@@ -54,7 +69,8 @@ export class NotificationsProcessor extends WorkerHost {
           category: d.category,
           itemUrl,
         });
-        await this.email.send({ to: d.to, ...rendered });
+        const withUnsub = this.appendUnsubscribe(rendered, d.unsubscribeToken);
+        await this.email.send({ to: d.to, ...withUnsub });
         return;
       }
       case "match-found": {

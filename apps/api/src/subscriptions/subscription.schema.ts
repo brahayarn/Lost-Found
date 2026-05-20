@@ -25,6 +25,9 @@ export class Subscription {
 
   @Prop({ type: Date })
   lastNotifiedAt?: Date;
+
+  @Prop({ type: String, index: true, unique: true, sparse: true })
+  unsubscribeToken?: string;
 }
 
 export const SubscriptionSchema = SchemaFactory.createForClass(Subscription);

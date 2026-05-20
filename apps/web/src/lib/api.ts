@@ -434,6 +434,17 @@ export async function deactivateSubscription(id: string): Promise<void> {
   }
 }
 
+export async function unsubscribeByToken(
+  token: string,
+): Promise<{ email: string; category: string; active: boolean }> {
+  try {
+    const { data } = await api.post("/subscriptions/unsubscribe", { token });
+    return data as { email: string; category: string; active: boolean };
+  } catch (err) {
+    throw unwrapErr(err);
+  }
+}
+
 export interface NotificationTemplateApi {
   _id: string;
   key: string;

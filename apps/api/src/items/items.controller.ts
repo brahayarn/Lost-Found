@@ -304,8 +304,11 @@ export class ItemsController {
   }
 
   @Get(":id/label")
-  @Roles(UserRole.OPERATOR, UserRole.ADMIN)
-  @ApiOperation({ summary: "PDF-етикетка 60×40 мм з QR" })
+  @Public()
+  @ApiOperation({
+    summary:
+      "PDF-етикетка 60×40 мм з QR (публічно — містить лише номер і QR на публічну сторінку)",
+  })
   async label(
     @Param("id") id: string,
     @Res({ passthrough: true }) res: Response,

@@ -21,6 +21,7 @@ export interface SubscriptionMatchJob {
   itemNumber: string;
   itemTitle: string;
   category: string;
+  unsubscribeToken?: string;
 }
 
 export interface MatchFoundJob {
